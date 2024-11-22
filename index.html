@@ -1,198 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Custom Auth0 Dashboard</title>
-<style>
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background: #121212;
-    color: #e0e0e0;
-  }
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: #1e1e1e;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  }
-
-  header .logo {
-    font-size: 1.5rem;
-    color: #00bfff;
-    font-weight: bold;
-  }
-
-  header nav {
-    display: flex;
-    gap: 1rem;
-  }
-
-  header nav a, header nav button {
-    color: #e0e0e0;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  header nav button:hover, header nav a:hover {
-    background: #2e2e2e;
-  }
-
-  .container {
-    padding: 2rem;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .auth-form {
-    background: #1e1e1e;
-    padding: 2rem;
-    max-width: 400px;
-    margin: 2rem auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  }
-
-  .auth-form h2 {
-    margin-bottom: 1rem;
-    color: #00bfff;
-  }
-
-  .auth-form input {
-    width: calc(100% - 1rem);
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    border: none;
-    border-radius: 4px;
-    background: #2e2e2e;
-    color: #e0e0e0;
-  }
-
-  .auth-form button {
-    width: 100%;
-    padding: 0.7rem;
-    background: #00bfff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  .auth-form button:hover {
-    background: #009acd;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop - Modern Design</title>
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: #1f1f1f;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #00bcd4;
+    }
+    .nav {
+      display: flex;
+      gap: 20px;
+    }
+    .nav a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+    .nav a:hover {
+      color: #00bcd4;
+    }
+    .button {
+      background: #00bcd4;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .button:hover {
+      background: #008c9e;
+    }
+    .shop-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+    }
+    .product {
+      background: #1f1f1f;
+      padding: 15px;
+      border-radius: 10px;
+      width: 250px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .product img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+    .product h3 {
+      font-size: 1.2rem;
+      color: #00bcd4;
+      margin: 10px 0;
+    }
+    .announcement-popup {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, -10%);
+      background: #1f1f1f;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      display: none;
+      animation: slideIn 0.5s ease-out;
+      z-index: 9999;
+    }
+    .announcement-popup h2 {
+      text-align: center;
+      color: #00bcd4;
+    }
+    .announcement-popup .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #ff4d4d;
+    }
+    @keyframes slideIn {
+      from {
+        transform: translate(-50%, -30%);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, -10%);
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="logo">Dashboard</div>
-  <nav>
-    <a href="#" id="categories-link">Categories</a>
-    <a href="#" id="store-link">Store</a>
-    <a href="#" id="forum-link">Forum</a>
-    <span id="auth-section">
-      <button id="login-btn" class="hidden">Login</button>
-    </span>
-  </nav>
-</header>
+  <!-- Header -->
+  <header>
+    <div class="logo">Shop Dashboard</div>
+    <div class="nav">
+      <a href="/shop">Shop</a>
+      <a href="/forum">Forum</a>
+      <a href="/account/manage" id="manage-account">Manage Account</a>
+    </div>
+    <button class="button" id="login-btn">
+      <i class="fas fa-sign-in-alt"></i> Login
+    </button>
+    <button class="button" id="logout-btn" style="display: none;">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </header>
 
-<div class="container">
-  <div id="main-page" class="hidden">
-    <h1>Welcome to the Dashboard</h1>
-    <p>Use the navigation to explore the platform.</p>
+  <!-- Shop Content -->
+  <main class="shop-container" id="shop-container">
+    <!-- Products will be dynamically inserted here -->
+  </main>
+
+  <!-- Announcement Popup -->
+  <div class="announcement-popup" id="announcement-popup">
+    <span class="close" id="close-announcement">&times;</span>
+    <h2>📢 Announcement 📢</h2>
+    <p id="announcement-message"></p>
   </div>
 
-  <div id="auth-form-page" class="auth-form hidden">
-    <h2 id="auth-form-title">Login</h2>
-    <form id="auth-form">
-      <input type="email" id="auth-email" placeholder="Email" required />
-      <input type="password" id="auth-password" placeholder="Password" required />
-      <button type="submit">Submit</button>
-    </form>
-    <p id="auth-toggle">Don't have an account? <a href="#" id="toggle-auth-mode">Register</a></p>
-  </div>
-</div>
+  <!-- JavaScript -->
+  <script>
+    let auth0 = null;
 
-<script src="https://cdn.auth0.com/js/auth0-spa-js/1.20/auth0-spa-js.production.js"></script>
-<script>
-  let auth0 = null;
-  let isLoginMode = true;
-
-  async function initAuth0() {
-    auth0 = await createAuth0Client({
-      domain: "dev-5ousdzi3slqmqsnw.eu.auth0.com",
-      client_id: "vTGZIMoyIktLRjrwapREVNft42wuIY2Y",
-      audience: "https://nexaverse-vr-api",
-      scope: "openid profile email",
-      redirect_uri: window.location.origin
-    });
-
-    const isAuthenticated = await auth0.isAuthenticated();
-    if (isAuthenticated) {
-      const user = await auth0.getUser();
-      updateUI(user);
-    } else {
-      document.getElementById('login-btn').classList.remove('hidden');
+    async function configureAuth0() {
+      auth0 = await createAuth0Client({
+        domain: "YOUR_AUTH0_DOMAIN",
+        clientId: "YOUR_AUTH0_CLIENT_ID",
+        cacheLocation: "localstorage"
+      });
     }
-  }
 
-  function updateUI(user) {
-    document.getElementById('auth-section').innerHTML = `
-      <span>${user.name}</span>
-      <button id="logout-btn">Logout</button>
-    `;
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      auth0.logout({ returnTo: window.location.origin });
-    });
+    async function login() {
+      await auth0.loginWithRedirect({
+        redirect_uri: window.location.origin
+      });
+    }
 
-    document.getElementById('main-page').classList.remove('hidden');
-  }
+    async function logout() {
+      auth0.logout({
+        returnTo: window.location.origin
+      });
+    }
 
-  document.getElementById('login-btn').addEventListener('click', () => {
-    document.getElementById('auth-form-page').classList.remove('hidden');
-    document.getElementById('main-page').classList.add('hidden');
-  });
+    async function updateUI() {
+      const isAuthenticated = await auth0.isAuthenticated();
+      const loginBtn = document.getElementById("login-btn");
+      const logoutBtn = document.getElementById("logout-btn");
 
-  document.getElementById('toggle-auth-mode').addEventListener('click', (e) => {
-    e.preventDefault();
-    isLoginMode = !isLoginMode;
-    document.getElementById('auth-form-title').textContent = isLoginMode ? 'Login' : 'Register';
-    document.getElementById('auth-toggle').innerHTML = isLoginMode
-      ? `Don't have an account? <a href="#" id="toggle-auth-mode">Register</a>`
-      : `Already have an account? <a href="#" id="toggle-auth-mode">Login</a>`;
-  });
+      if (isAuthenticated) {
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "block";
 
-  document.getElementById('auth-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-
-    if (isLoginMode) {
-      try {
-        await auth0.loginWithRedirect({ email, password });
-      } catch (err) {
-        alert('Login failed');
+        const user = await auth0.getUser();
+        document.querySelector(".logo").innerHTML = `Welcome, ${user.name}`;
+      } else {
+        loginBtn.style.display = "block";
+        logoutBtn.style.display = "none";
       }
-    } else {
-      alert('Registration flow needs to be implemented');
     }
-  });
 
-  window.onload = initAuth0;
-</script>
+    // Initialization
+    window.onload = async () => {
+      await configureAuth0();
+      const query = window.location.search;
+      if (query.includes("code=") && query.includes("state=")) {
+        await auth0.handleRedirectCallback();
+        window.history.replaceState({}, document.title, "/");
+      }
+      updateUI();
+    };
+
+    // Attach Event Listeners
+    document.getElementById("login-btn").addEventListener("click", login);
+    document.getElementById("logout-btn").addEventListener("click", logout);
+
+    // Announcement Popup Logic
+    const closeBtn = document.getElementById("close-announcement");
+    closeBtn.addEventListener("click", () => {
+      document.getElementById("announcement-popup").style.display = "none";
+    });
+  </script>
 </body>
-  </html>
-
+</html>

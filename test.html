@@ -7,6 +7,175 @@
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Oxanium:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* CSS will go here */
+        body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Oxanium', sans-serif;
+    color: #e0e0e0;
+    overflow-x: hidden;
+    height: 100vh;
+    background-color: #000;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: radial-gradient(ellipse at bottom, #1a1a1a 0%, #000000 100%);
+    overflow: hidden;
+}
+
+.blood-drips {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('blood-drips.png') repeat-x top center;
+    background-size: contain;
+    opacity: 0.7;
+    transform: translateY(-100%);
+    animation: bloodFlow 15s linear infinite;
+    filter: drop-shadow(0 0 10px #ff0000);
+}
+
+.monster {
+    position: absolute;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 800px;
+    background: url('monster-silhouette.png') no-repeat center bottom;
+    background-size: contain;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.7));
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+}
+
+.title-glitch {
+    font-family: 'Creepster', cursive;
+    font-size: 6rem;
+    text-align: center;
+    color: #ff0000;
+    text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+    margin: 2rem 0 0;
+    animation: glitch 2s infinite alternate;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 1.5rem;
+    letter-spacing: 0.5rem;
+    margin-top: -1rem;
+    color: #aaa;
+}
+
+.game-info {
+    max-width: 800px;
+    margin: 3rem auto;
+    text-align: center;
+}
+
+.info-card {
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 1px solid #ff0000;
+    border-radius: 5px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.pulse-button {
+    background-color: #ff0000;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    animation: pulse 2s infinite;
+}
+
+.pulse-button:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+}
+
+.audio-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: auto;
+    padding: 1rem;
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 1rem;
+    color: #555;
+}
+
+/* Animations */
+@keyframes bloodFlow {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes glitch {
+    0% { text-shadow: 0.05em 0 0 #ff0000, -0.05em -0.025em 0 #00ff00, -0.025em 0.05em 0 #0000ff; }
+    14% { text-shadow: 0.05em 0 0 #ff0000, -0.05em -0.025em 0 #00ff00, -0.025em 0.05em 0 #0000ff; }
+    15% { text-shadow: -0.05em -0.025em 0 #ff0000, 0.025em 0.025em 0 #00ff00, -0.05em -0.05em 0 #0000ff; }
+    49% { text-shadow: -0.05em -0.025em 0 #ff0000, 0.025em 0.025em 0 #00ff00, -0.05em -0.05em 0 #0000ff; }
+    50% { text-shadow: 0.025em 0.05em 0 #ff0000, 0.05em 0 0 #00ff00, 0 -0.05em 0 #0000ff; }
+    99% { text-shadow: 0.025em 0.05em 0 #ff0000, 0.05em 0 0 #00ff00, 0 -0.05em 0 #0000ff; }
+    100% { text-shadow: -0.025em 0 0 #ff0000, -0.025em -0.025em 0 #00ff00, -0.025em -0.05em 0 #0000ff; }
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 0, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+}
+
+.beat-shake {
+    animation: beatShake 0.3s;
+}
+
+@keyframes beatShake {
+    0% { transform: translateX(0) translateY(0); }
+    25% { transform: translateX(-5px) translateY(5px); }
+    50% { transform: translateX(5px) translateY(-5px); }
+    75% { transform: translateX(-5px) translateY(5px); }
+    100% { transform: translateX(0) translateY(0); }
+}
+
+.blood-rush {
+    animation: bloodRush 0.5s forwards;
+}
+
+@keyframes bloodRush {
+    0% { transform: translateY(var(--current-pos)); }
+    100% { transform: translateY(calc(var(--current-pos) + 50px)); }
+        }
     </style>
 </head>
 <body>
@@ -50,6 +219,101 @@
     </audio>
     
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const audio = document.getElementById('ambienceTrack');
+    const playBtn = document.getElementById('playBtn');
+    const volumeControl = document.getElementById('volumeControl');
+    const bloodDrips = document.querySelector('.blood-drips');
+    const monster = document.querySelector('.monster');
+    
+    // Audio context setup for beat detection
+    let audioContext, analyser, dataArray, beatDetected;
+    
+    playBtn.addEventListener('click', function() {
+        if (audio.paused) {
+            audio.play();
+            playBtn.textContent = '❚❚ PAUSE AMBIENCE';
+            setupAudioAnalysis();
+        } else {
+            audio.pause();
+            playBtn.textContent = '▶ PLAY AMBIENCE';
+        }
+    });
+    
+    volumeControl.addEventListener('input', function() {
+        audio.volume = this.value;
+    });
+    
+    function setupAudioAnalysis() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioContext.createMediaElementSource(audio);
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        beatDetected = false;
+        
+        detectBeat();
+    }
+    
+    function detectBeat() {
+        if (!analyser) return;
+        
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Analyze low frequencies for beats (bass/kick drum)
+        let sum = 0;
+        for (let i = 0; i < 10; i++) {
+            sum += dataArray[i];
+        }
+        let average = sum / 10;
+        
+        // If sudden increase in volume, it's probably a beat
+        if (average > 180 && !beatDetected) {
+            onBeat();
+            beatDetected = true;
+            setTimeout(() => { beatDetected = false; }, 200);
+        }
+        
+        requestAnimationFrame(detectBeat);
+    }
+    
+    function onBeat() {
+        // Monster shake effect
+        monster.classList.add('beat-shake');
+        setTimeout(() => {
+            monster.classList.remove('beat-shake');
+        }, 300);
+        
+        // Blood rush effect
+        const currentPos = getComputedStyle(bloodDrips).transform;
+        bloodDrips.style.setProperty('--current-pos', currentPos);
+        bloodDrips.classList.add('blood-rush');
+        
+        setTimeout(() => {
+            bloodDrips.classList.remove('blood-rush');
+        }, 500);
+    }
+    
+    // Continuous blood flow animation
+    setInterval(() => {
+        const currentTransform = getComputedStyle(bloodDrips).transform;
+        if (currentTransform === 'none') {
+            bloodDrips.style.transform = 'translateY(-100%)';
+        } else {
+            const matrix = new DOMMatrix(currentTransform);
+            const currentY = matrix.m42;
+            
+            if (currentY >= 0) {
+                bloodDrips.style.transform = 'translateY(-100%)';
+            } else {
+                bloodDrips.style.transform = `translateY(${currentY + 0.5}px)`;
+            }
+        }
+    }, 50);
+});
         // JavaScript will go here
     </script>
 </body>

@@ -507,7 +507,19 @@ let scene, camera, renderer, analyser, audioContext, dataArray;
 let curveLine, glowParticles;
 let isInitialized = false;
 const backgroundMusic = document.getElementById('backgroundMusic');
+const introPage = document.getElementById('intro-page');
+        const enterButton = document.getElementById('enterButton');
 
+        enterButton.addEventListener('click', () => {
+            introPage.classList.add('fade-out');
+            document.getElementById('backgroundMusic').play();
+            
+            // Remove intro page after animation completes
+            setTimeout(() => {
+                introPage.style.display = 'none';
+            }, 1000);
+        });
+    
 // Init
 function initVisualizer() {
     // Scene setup

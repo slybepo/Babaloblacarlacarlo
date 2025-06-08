@@ -1,213 +1,659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shop - Modern Design</title>
-  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      overflow-x: hidden;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background: #1f1f1f;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    }
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #00bcd4;
-    }
-    .nav {
-      display: flex;
-      gap: 20px;
-    }
-    .nav a {
-      text-decoration: none;
-      color: #fff;
-      font-size: 1rem;
-      transition: color 0.3s;
-    }
-    .nav a:hover {
-      color: #00bcd4;
-    }
-    .button {
-      background: #00bcd4;
-      color: #fff;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .button:hover {
-      background: #008c9e;
-    }
-    .shop-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 20px;
-      gap: 20px;
-    }
-    .product {
-      background: #1f1f1f;
-      padding: 15px;
-      border-radius: 10px;
-      width: 250px;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
-    .product img {
-      max-width: 100%;
-      border-radius: 10px;
-    }
-    .product h3 {
-      font-size: 1.2rem;
-      color: #00bcd4;
-      margin: 10px 0;
-    }
-    .announcement-popup {
-      position: fixed;
-      top: 10%;
-      left: 50%;
-      transform: translate(-50%, -10%);
-      background: #1f1f1f;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-      display: none;
-      animation: slideIn 0.5s ease-out;
-      z-index: 9999;
-    }
-    .announcement-popup h2 {
-      text-align: center;
-      color: #00bcd4;
-    }
-    .announcement-popup .close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      color: #ff4d4d;
-    }
-    @keyframes slideIn {
-      from {
-        transform: translate(-50%, -30%);
-        opacity: 0;
-      }
-      to {
-        transform: translate(-50%, -10%);
-        opacity: 1;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Bot - Discord Powerhouse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752c4;
+            --dark: #0f0f12;
+            --darker: #0a0a0c;
+            --light: #ffffff;
+            --gray: #99aab5;
+            --dark-gray: #2c2f33;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--light);
+            overflow-x: hidden;
+            background-color: var(--dark);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* Canvas Background */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        /* Intro Page */
+        #intro-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(15, 15, 18, 0.9);
+            z-index: 1000;
+            transition: opacity 1s ease-out;
+        }
+
+        #intro-page.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-logo {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .intro-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary), #9b59b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .intro-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            color: var(--gray);
+        }
+
+        .intro-button {
+            padding: 1rem 2.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .intro-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(88, 101, 242, 0.3);
+        }
+
+        /* Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background-color: rgba(15, 15, 18, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--light);
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 12px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Audio Control */
+        .audio-control {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .audio-control:hover {
+            transform: scale(1.1);
+        }
+
+        .audio-control i {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            padding: 15rem 3rem 5rem;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hero-text {
+            flex: 1;
+            padding-right: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(88, 101, 242, 0.3);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(88, 101, 242, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .hero-image {
+            flex: 1;
+            position: relative;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 8rem 3rem;
+            background-color: var(--darker);
+            position: relative;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-title h2 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background-color: rgba(42, 44, 51, 0.5);
+            border-radius: 15px;
+            padding: 2.5rem 2rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(88, 101, 242, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.1), transparent);
+            z-index: -1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(88, 101, 242, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-text {
+                padding-right: 0;
+                margin-bottom: 3rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-image {
+                margin-top: 3rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .section-title h2 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <div class="logo">Shop Dashboard</div>
-    <div class="nav">
-      <a href="/shop">Shop</a>
-      <a href="/forum">Forum</a>
-      <a href="/account/manage" id="manage-account">Manage Account</a>
+    <!-- Intro Page -->
+    <div id="intro-page">
+        <img src="https://i.imgur.com/JQ9wDgB.png" alt="Nexus Bot Logo" class="intro-logo">
+        <h1 class="intro-title">NEXUS BOT</h1>
+        <p class="intro-subtitle">The ultimate Discord experience</p>
+        <button class="intro-button" id="enterButton">ENTER</button>
     </div>
-    <button class="button" id="login-btn">
-      <i class="fas fa-sign-in-alt"></i> Login
-    </button>
-    <button class="button" id="logout-btn" style="display: none;">
-      <i class="fas fa-sign-out-alt"></i> Logout
-    </button>
-  </header>
 
-  <!-- Shop Content -->
-  <main class="shop-container" id="shop-container">
-    <!-- Products will be dynamically inserted here -->
-  </main>
+    <!-- Canvas Background -->
+    <div id="canvas-container"></div>
 
-  <!-- Announcement Popup -->
-  <div class="announcement-popup" id="announcement-popup">
-    <span class="close" id="close-announcement">&times;</span>
-    <h2>📢 Announcement 📢</h2>
-    <p id="announcement-message"></p>
-  </div>
+    <!-- Navigation -->
+    <header>
+        <a href="#" class="logo">
+            <img src="https://i.imgur.com/JQ9wDgB.png" alt="Nexus Bot Logo">
+            Nexus
+        </a>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#">Commands</a></li>
+            <li><a href="#">Premium</a></li>
+            <li><a href="#">Dashboard</a></li>
+        </ul>
+        <div class="auth-buttons">
+            <button class="btn btn-outline">Login</button>
+            <button class="btn btn-primary">Sign Up</button>
+        </div>
+    </header>
 
-  <!-- JavaScript -->
-  <script>
-    let auth0 = null;
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Elevate Your Discord Server</h1>
+                <p>Nexus Bot brings powerful moderation, music, and utility features to take your community to the next level with seamless integration.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary">Invite Bot</button>
+                    <button class="btn btn-outline">Learn More</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://i.imgur.com/5X3ZmJa.png" alt="Nexus Bot Dashboard">
+            </div>
+        </div>
+    </section>
 
-    async function configureAuth0() {
-      auth0 = await createAuth0Client({
-        domain: "dev-6sx32e70db4eh48r.us.auth0.com",
-        clientId: "XtpenOcdDbKJGwpIfTjI56ZvLjDwaAgl",
-        cacheLocation: "localstorage"
-      });
-    }
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="section-title">
+                <h2>Powerful Features</h2>
+                <p>Nexus Bot comes packed with everything you need to manage and grow your Discord community</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Advanced Moderation</h3>
+                    <p>Automatically detect and take action against spam, raids, and inappropriate content with customizable filters.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3>High Quality Music</h3>
+                    <p>Play crystal clear music from YouTube, Spotify, and more with our lag-free music system.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Smart Automation</h3>
+                    <p>Automate repetitive tasks with custom commands and triggers to streamline your server management.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    async function login() {
-      await auth0.loginWithRedirect({
-        redirect_uri: window.location.origin
-      });
-    }
+    <!-- Audio Control -->
+    <div class="audio-control" id="audioControl">
+        <i class="fas fa-volume-up"></i>
+    </div>
 
-    async function logout() {
-      auth0.logout({
-        returnTo: window.location.origin
-      });
-    }
+    <!-- Audio Element -->
+    <audio id="backgroundMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
 
-    async function updateUI() {
-      const isAuthenticated = await auth0.isAuthenticated();
-      const loginBtn = document.getElementById("login-btn");
-      const logoutBtn = document.getElementById("logout-btn");
+    <script>
+        // Intro Page Transition
+        const introPage = document.getElementById('intro-page');
+        const enterButton = document.getElementById('enterButton');
 
-      if (isAuthenticated) {
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "block";
+        enterButton.addEventListener('click', () => {
+            introPage.classList.add('fade-out');
+            document.getElementById('backgroundMusic').play();
+            
+            // Remove intro page after animation completes
+            setTimeout(() => {
+                introPage.style.display = 'none';
+            }, 1000);
+        });
 
-        const user = await auth0.getUser();
-        document.querySelector(".logo").innerHTML = `Welcome, ${user.name}`;
-      } else {
-        loginBtn.style.display = "block";
-        logoutBtn.style.display = "none";
-      }
-    }
+        // Audio Control
+        const audioControl = document.getElementById('audioControl');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        let isAudioPlaying = true;
 
-    // Initialization
-    window.onload = async () => {
-      await configureAuth0();
-      const query = window.location.search;
-      if (query.includes("code=") && query.includes("state=")) {
-        await auth0.handleRedirectCallback();
-        window.history.replaceState({}, document.title, "/");
-      }
-      updateUI();
-    };
+        audioControl.addEventListener('click', () => {
+            if (isAudioPlaying) {
+                backgroundMusic.pause();
+                audioControl.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            } else {
+                backgroundMusic.play();
+                audioControl.innerHTML = '<i class="fas fa-volume-up"></i>';
+            }
+            isAudioPlaying = !isAudioPlaying;
+        });
 
-    // Attach Event Listeners
-    document.getElementById("login-btn").addEventListener("click", login);
-    document.getElementById("logout-btn").addEventListener("click", logout);
+        // 3D Audio Reactive Background
+        const container = document.getElementById('canvas-container');
+        let scene, camera, renderer, analyser, audioContext, dataArray;
+        let cubes = [];
+        let isInitialized = false;
 
-    // Announcement Popup Logic
-    const closeBtn = document.getElementById("close-announcement");
-    closeBtn.addEventListener("click", () => {
-      document.getElementById("announcement-popup").style.display = "none";
-    });
-  </script>
+        function initAudioVisualizer() {
+            // Set up Three.js scene
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            // Create cubes
+            const geometry = new THREE.BoxGeometry(2, 2, 2);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x5865F2,
+                shininess: 100,
+                specular: 0xffffff
+            });
+
+            // Position cubes in a grid
+            const gridSize = 5;
+            const spacing = 4;
+            
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    const cube = new THREE.Mesh(geometry, material.clone());
+                    cube.position.x = (x - (gridSize - 1) / 2) * spacing;
+                    cube.position.y = (y - (gridSize - 1) / 2) * spacing;
+                    cube.userData.baseZ = -10;
+                    cube.position.z = cube.userData.baseZ;
+                    scene.add(cube);
+                    cubes.push(cube);
+                }
+            }
+
+            // Add lights
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+
+            // Set up audio analyzer
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 64;
+            
+            const source = audioContext.createMediaElementSource(backgroundMusic);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            isInitialized = true;
+            animate();
+        }
+
+        function animate() {
+            if (!isInitialized) return;
+            
+            requestAnimationFrame(animate);
+            
+            // Get frequency data
+            analyser.getByteFrequencyData(dataArray);
+            
+            // Update cubes based on audio data
+            cubes.forEach((cube, i) => {
+                const frequency = dataArray[i % dataArray.length] / 255;
+                const scale = 1 + frequency * 2;
+                cube.scale.set(scale, scale, scale);
+                
+                // Add subtle rotation
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                
+                // Pulse effect
+                cube.position.z = cube.userData.baseZ + Math.sin(Date.now() * 0.001 + i) * 2;
+                
+                // Color change based on frequency
+                cube.material.color.setHSL(
+                    0.6 + frequency * 0.2,
+                    0.8,
+                    0.5 + frequency * 0.3
+                );
+            });
+            
+            renderer.render(scene, camera);
+        }
+
+        // Initialize visualizer when user interacts (to comply with autoplay policies)
+        document.addEventListener('click', () => {
+            if (!isInitialized) {
+                initAudioVisualizer();
+            }
+        }, { once: true });
+
+        // Alternatively, initialize when music starts playing
+        backgroundMusic.addEventListener('play', () => {
+            if (!isInitialized) {
+                initAudioVisualizer();
+            }
+        });
+    </script>
 </body>
-</html>
+                  </html>

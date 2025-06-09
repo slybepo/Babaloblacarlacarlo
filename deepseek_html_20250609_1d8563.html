@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaveOurWater (S.O.W) - Protégeons nos océans</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <style>
+        :root {
+            --primary: #00a8e8;
+            --secondary: #0077b6;
+            --dark: #003554;
+            --light: #f8f9fa;
+            --danger: #e63946;
+            --success: #2a9d8f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--light);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--dark);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+        
+        .auth-buttons button {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .auth-buttons button:hover {
+            background: var(--dark);
+            color: white;
+        }
+        
+        .hero {
+            height: 80vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://images.unsplash.com/photo-1439405326854-014607f694d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 0 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats {
+            padding: 5rem 2rem;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            color: var(--dark);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .stat-card i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            color: #666;
+        }
+        
+        .chart-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-section {
+            padding: 5rem 2rem;
+            background-color: #f0f8ff;
+        }
+        
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+        
+        .fishing-spots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .spot-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .spot-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .spot-info {
+            padding: 1.5rem;
+        }
+        
+        .spot-info h3 {
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .spot-info p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status.allowed {
+            background-color: rgba(42, 157, 143, 0.2);
+            color: var(--success);
+        }
+        
+        .status.restricted {
+            background-color: rgba(230, 57, 70, 0.2);
+            color: var(--danger);
+        }
+        
+        .partners {
+            padding: 5rem 2rem;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .partner-logos {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .partner-logos a {
+            display: inline-block;
+            width: 150px;
+            height: 80px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .partner-logos a:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .social-icons {
+            margin: 2rem 0;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            animation: modalopen 0.5s;
+        }
+        
+        @keyframes modalopen {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-submit {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .form-submit:hover {
+            background-color: var(--secondary);
+        }
+        
+        .form-footer {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                margin-top: 1rem;
+            }
+            
+            .nav-links li {
+                margin-left: 1rem;
+                margin-right: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span>S.O.W</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Accueil</a></li>
+            <li><a href="#stats">Statistiques</a></li>
+            <li><a href="#map-section">Carte</a></li>
+            <li><a href="#partners">Associations</a></li>
+        </ul>
+        <div id="auth-section">
+            <div id="user-avatar" class="user-avatar" style="display: none;"></div>
+            <div class="auth-buttons">
+                <button id="login-btn">Connexion</button>
+                <button id="register-btn">Inscription</button>
+            </div>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
+        <h1>Protégeons nos océans ensemble</h1>
+        <p>SaveOurWater est une initiative pour lutter contre la pollution des océans et protéger les espèces marines en danger.</p>
+        <a href="#stats" class="btn">Découvrir les chiffres</a>
+    </section>
+
+    <section id="stats" class="stats">
+        <h2 class="section-title">Notre océan en chiffres</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-fish"></i>
+                <h3 id="endangered-species">32,000</h3>
+                <p>Espèces marines menacées</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-trash"></i>
+                <h3 id="plastic-waste">8M</h3>
+                <p>Tonnes de plastique déversées chaque année</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-temperature-high"></i>
+                <h3 id="temp-rise">1.5°C</h3>
+                <p>Augmentation de la température des océans</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-water"></i>
+                <h3 id="coral-bleach">50%</h3>
+                <p>Récifs coralliens disparus depuis 1950</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="speciesChart"></canvas>
+        </div>
+    </section>
+
+    <section id="map-section" class="map-section">
+        <h2 class="section-title">Zones de pêche et conservation</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 2rem;">
+            Explorez notre carte interactive pour découvrir les zones où la pêche est autorisée ou réglementée, ainsi que les zones marines protégées.
+        </p>
+        <div id="map"></div>
+
+        <div class="fishing-spots">
+            <div class="spot-card">
+                <img src="https://images.unsplash.com/photo-1516481605912-d34c1411501c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Spot de pêche">
+                <div class="spot-info">
+                    <h3>Baie de Monterey, Californie</h3>
+                    <p>Zone de pêche réglementée avec des quotas stricts pour protéger les espèces locales.</p>
+                    <span class="status restricted">Réglementé</span>
+                </div>
+            </div>
+            <div class="spot-card">
+                <img src="https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Spot de pêche">
+                <div class="spot-info">
+                    <h3>Récif de la Grande Barrière, Australie</h3>
+                    <p>Zone marine protégée où la pêche est strictement interdite.</p>
+                    <span class="status restricted">Interdit</span>
+                </div>
+            </div>
+            <div class="spot-card">
+                <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Spot de pêche">
+                <div class="spot-info">
+                    <h3>Fjords norvégiens</h3>
+                    <p>Pêche durable autorisée avec des pratiques respectueuses de l'environnement.</p>
+                    <span class="status allowed">Autorisé</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="partners" class="partners">
+        <h2 class="section-title">Nos partenaires</h2>
+        <p>Nous collaborons avec des associations à but non lucratif pour maximiser notre impact.</p>
+        
+        <div class="partner-logos">
+            <a href="https://www.sea Shepherd.fr" target="_blank">Sea Shepherd</a>
+            <a href="https://www.surfrider.org" target="_blank">Surfrider Foundation</a>
+            <a href="https://www.greenpeace.fr" target="_blank">Greenpeace</a>
+            <a href="https://www.wwf.fr" target="_blank">WWF</a>
+            <a href="https://www.theoceancleanup.com" target="_blank">The Ocean Cleanup</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="logo" style="justify-content: center; margin-bottom: 1rem;">
+            <span>S.O.W</span>
+        </div>
+        <p>SaveOurWater - Ensemble pour la protection des océans</p>
+        
+        <div class="footer-links">
+            <a href="#home">Accueil</a>
+            <a href="#stats">Statistiques</a>
+            <a href="#map-section">Carte</a>
+            <a href="#partners">Associations</a>
+            <a href="#">Politique de confidentialité</a>
+            <a href="#">Contact</a>
+        </div>
+        
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        
+        <p class="copyright">© 2023 SaveOurWater. Tous droits réservés.</p>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 style="text-align: center; margin-bottom: 1.5rem;">Connexion</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Mot de passe</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="form-submit">Se connecter</button>
+                <div class="form-footer">
+                    <p>Pas encore de compte? <a href="#" id="show-register">S'inscrire</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 style="text-align: center; margin-bottom: 1.5rem;">Inscription</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-name">Pseudo</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Mot de passe</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <button type="submit" class="form-submit">S'inscrire</button>
+                <div class="form-footer">
+                    <p>Déjà un compte? <a href="#" id="show-login">Se connecter</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEXAMPLEEXAMPLEEXAMPLE",
+            authDomain: "saveourwater-example.firebaseapp.com",
+            projectId: "saveourwater-example",
+            storageBucket: "saveourwater-example.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abc123def456example"
+        };
+
+        // Initialisation Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // DOM Elements
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const userAvatar = document.getElementById('user-avatar');
+        const authSection = document.getElementById('auth-section');
+        const loginModal = document.getElementById('login-modal');
+        const registerModal = document.getElementById('register-modal');
+        const closeButtons = document.getElementsByClassName('close');
+        const showRegister = document.getElementById('show-register');
+        const showLogin = document.getElementById('show-login');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
+        // Animer les statistiques
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                obj.innerHTML = value.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Initialiser le graphique
+        function initChart() {
+            const ctx = document.getElementById('speciesChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1950', '1960', '1970', '1980', '1990', '2000', '2010', '2020'],
+                    datasets: [{
+                        label: 'Espèces marines en danger',
+                        data: [500, 1200, 2500, 5000, 8500, 15000, 24000, 32000],
+                        borderColor: '#e63946',
+                        backgroundColor: 'rgba(230, 57, 70, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Augmentation des espèces marines en danger depuis 1950'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialiser la carte
+        function initMap() {
+            // En attendant l'API Google Maps
+            document.getElementById('map').innerHTML = `
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f0f0f0; border-radius: 10px;">
+                    <p style="text-align: center; padding: 2rem;">Carte interactive des zones de pêche et de conservation<br>
+                    <small>À implémenter avec l'API Google Maps ou Mapbox</small></p>
+                </div>
+            `;
+            
+            // Pour une vraie implémentation, vous utiliseriez:
+            /*
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 0, lng: 0 },
+                zoom: 2,
+                styles: [...] // Style personnalisé pour ressembler à Snapchat/Macadam
+            });
+            
+            // Ajouter des marqueurs pour les zones de pêche
+            */
+        }
+
+        // Gestion de l'authentification
+        function setupAuth() {
+            // Écouteur pour les changements d'état d'authentification
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // Utilisateur connecté
+                    const displayName = user.displayName || user.email.split('@')[0];
+                    const firstLetter = displayName.charAt(0).toUpperCase();
+                    
+                    // Afficher l'avatar
+                    userAvatar.textContent = firstLetter;
+                    userAvatar.style.display = 'flex';
+                    
+                    // Masquer les boutons de connexion
+                    document.querySelector('.auth-buttons').style.display = 'none';
+                    
+                    // Stocker les infos utilisateur dans Firestore
+                    db.collection('users').doc(user.uid).set({
+                        name: displayName,
+                        email: user.email,
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                } else {
+                    // Utilisateur déconnecté
+                    userAvatar.style.display = 'none';
+                    document.querySelector('.auth-buttons').style.display = 'block';
+                }
+            });
+
+            // Gestion des modales
+            loginBtn.addEventListener('click', () => loginModal.style.display = 'block');
+            registerBtn.addEventListener('click', () => registerModal.style.display = 'block');
+            
+            Array.from(closeButtons).forEach(btn => {
+                btn.addEventListener('click', () => {
+                    loginModal.style.display = 'none';
+                    registerModal.style.display = 'none';
+                });
+            });
+            
+            showRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginModal.style.display = 'none';
+                registerModal.style.display = 'block';
+            });
+            
+            showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                registerModal.style.display = 'none';
+                loginModal.style.display = 'block';
+            });
+            
+            // Fermer les modales en cliquant à l'extérieur
+            window.addEventListener('click', (e) => {
+                if (e.target === loginModal) loginModal.style.display = 'none';
+                if (e.target === registerModal) registerModal.style.display = 'none';
+            });
+
+            // Connexion
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(() => {
+                        loginModal.style.display = 'none';
+                        loginForm.reset();
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            });
+
+            // Inscription
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        return userCredential.user.updateProfile({
+                            displayName: name
+                        });
+                    })
+                    .then(() => {
+                        registerModal.style.display = 'none';
+                        registerForm.reset();
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            });
+        }
+
+        // Déconnexion (à ajouter comme événement click sur l'avatar si besoin)
+        function logout() {
+            auth.signOut();
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animer les valeurs statistiques
+            animateValue('endangered-species', 0, 32000, 2000);
+            animateValue('plastic-waste', 0, 8, 2000);
+            animateValue('temp-rise', 0, 1.5, 2000);
+            animateValue('coral-bleach', 0, 50, 2000);
+            
+            // Initialiser le graphique
+            initChart();
+            
+            // Initialiser la carte
+            initMap();
+            
+            // Configurer l'authentification
+            setupAuth();
+        });
+    </script>
+</body>
+</html>
